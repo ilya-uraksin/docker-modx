@@ -1,6 +1,4 @@
-FROM php:7.1-fpm
-
-MAINTAINER Vadim Homchik <homchik@gmail.com> (@vh)
+FROM php:7.3-fpm
 
 # install the PHP extensions we need
 RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev unzip sudo && rm -rf /var/lib/apt/lists/* \
@@ -10,30 +8,30 @@ RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev unzip sudo && rm
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
+	echo 'opcache.memory_consumption=128'; \
+	echo 'opcache.interned_strings_buffer=8'; \
+	echo 'opcache.max_accelerated_files=4000'; \
+	echo 'opcache.fast_shutdown=1'; \
+	echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # set timezone
 RUN { \
-		echo 'date.timezone=GMT+0'; \
+	echo 'date.timezone=GMT+0'; \
 	} > /usr/local/etc/php/conf.d/datetime.ini
 
 VOLUME /var/www/html
 
-ENV MODX_VERSION 2.7.0
-ENV MODX_SHA1 79f7399b6cb2a7508852f2e82821a0d5670ef41f
+ENV MODX_VERSION 2.8.3
+ENV MODX_SHA1 291878910780d16dcfed233c8c0f4236915d3447
 
 # upstream tarballs include ./modx-${MODX_VERSION}/
 RUN curl -o modx.zip -SL http://modx.com/download/direct/modx-${MODX_VERSION}-pl.zip \
 	&& echo "$MODX_SHA1 *modx.zip" | sha1sum -c - \
 	&& unzip modx.zip -d /usr/src \
-  && mv /usr/src/modx-${MODX_VERSION}-pl /usr/src/modx \
-  && find /usr/src/modx -name 'ht.access' -exec bash -c 'rm $0' {} \; \
-  && rm modx.zip \
+	&& mv /usr/src/modx-${MODX_VERSION}-pl /usr/src/modx \
+	&& find /usr/src/modx -name 'ht.access' -exec bash -c 'rm $0' {} \; \
+	&& rm modx.zip \
 	&& chown -R www-data:www-data /usr/src/modx
 
 COPY docker-entrypoint.sh /entrypoint.sh
