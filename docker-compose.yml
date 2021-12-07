@@ -5,7 +5,7 @@ services:
     links:
       - "db:mysql"
     ports:
-      - "85:80"
+      - "86:80"
     environment:
       MODX_VERSION: 2.7.0
       MODX_DB_HOST: "mysql:3306"
@@ -33,4 +33,4 @@ services:
       MYSQL_ROOT_PASSWORD: modx
     restart: always
     ports:
-      - 8085:80
+      - 8086:80
